@@ -2,16 +2,10 @@
   "name": "solidity-course-exercises",
   "version": "1.0.0",
   "description": "Solidity course exercises",
-  "scripts": {
-    "test": "hardhat test"
-  },
+  "scripts": {},
   "keywords": [
     "solidity"
   ],
   "author": "Luis Chavez",
-  "license": "ISC",
-  "dependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^1.0.2",
-    "hardhat": "^2.12.6"
-  }
+  "license": "ISC"
 }
