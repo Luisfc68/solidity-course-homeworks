@@ -1,0 +1,18 @@
+{
+  "name": "nft-homework",
+  "version": "1.0.0",
+  "description": "Homework 2",
+  "scripts": {
+    "test": "hardhat test"
+  },
+  "keywords": [
+    "solidity"
+  ],
+  "author": "Luis Chavez",
+  "license": "ISC",
+  "dependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^1.0.2",
+    "@openzeppelin/contracts": "^4.8.1",
+    "hardhat": "^2.12.6"
+  }
+}
