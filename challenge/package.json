@@ -1,0 +1,19 @@
+{
+  "name": "challenge",
+  "version": "1.0.0",
+  "description": "Solidity course challenge",
+  "scripts": {
+    "test": "hardhat test"
+  },
+  "keywords": [
+    "solidity",
+    "ERC20"
+  ],
+  "author": "Luis Chavez",
+  "license": "ISC",
+  "dependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "@openzeppelin/contracts": "^4.8.2",
+    "hardhat": "^2.13.0"
+  }
+}
