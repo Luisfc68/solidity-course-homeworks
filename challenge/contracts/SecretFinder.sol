@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.17;
 
-import "../node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 // You need to ask the secret to the keeper or guess it by yourself!
 contract SecretFinder is ERC20, Ownable {
