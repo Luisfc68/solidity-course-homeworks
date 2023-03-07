@@ -10,4 +10,5 @@ jobs:
       - name: Code analysis
         uses: crytic/slither-action@v0.3.0
         with:
+          node-version: 18
           target: "challenge"
