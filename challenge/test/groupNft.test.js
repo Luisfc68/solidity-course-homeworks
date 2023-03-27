@@ -59,7 +59,7 @@ describe('GroupNFT should', function() {
         const signer = await ethers.getSigners().then(signers => signers[1])
         const { contract } = await deploy()
 
-        await expect(contract.connect(signer).withdraw()).revertedWith('Ownable: caller is not the owner')
+        await expect(contract.connect(signer).withdrawAll()).revertedWith('Ownable: caller is not the owner')
     })
 
     it("fail to purchase when buyer doesn't have all tokens", async function () {
@@ -107,7 +107,7 @@ describe('GroupNFT should', function() {
             .then(() => dummyToken1.connect(signer).increaseAllowance(contract.address, 1))
             .then(() => dummyToken2.connect(signer).increaseAllowance(contract.address, 1))
             .then(() => contract.connect(signer).buy())
-            .then(() => contract.connect(owner).withdraw())
+            .then(() => contract.connect(owner).withdrawAll())
 
         const receipt = await tx.wait()
         const events = receipt.events

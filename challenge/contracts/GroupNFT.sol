@@ -15,20 +15,18 @@ contract GroupNFT is ERC721, Ownable, ReentrancyGuard {
     
     ERC20[] public requiredTokens;
 
-    event NewRequiredToken(ERC20 token);
+    event NewRequiredToken(ERC20 token, uint256 currentSupply);
     event RequiredTokenRemoved(ERC20 token);
     event Purchase(address buyer);
     event Withdrawal(string token, uint256 amount);
-    event WithdrawalFailure(string token);
-
 
     constructor() ERC721("GroupNFT", "GNFT") {}
 
     function addToWhitelist(ERC20 token) external onlyOwner {
         require(getTokenIndex(token) == -1, "Token already registered");
         requiredTokens.push(token);
-        try token.totalSupply() {
-            emit NewRequiredToken(token);
+        try token.totalSupply() returns(uint256 currentSupply) {
+            emit NewRequiredToken(token, currentSupply);
         } catch {
             revert("Address is not ECR20");
         }
@@ -54,18 +52,7 @@ contract GroupNFT is ERC721, Ownable, ReentrancyGuard {
 
     function buy() external nonReentrant {
         for (uint i = 0; i < requiredTokens.length; i++) {
-            require(
-                requiredTokens[i].allowance(msg.sender, address(this)) > 0,
-                string(abi.encodePacked("Insuficient allowance for token", requiredTokens[i].name()))
-            );
-            require (
-                requiredTokens[i].balanceOf(msg.sender) > 0, 
-                string(abi.encodePacked("Missing token ", requiredTokens[i].name(), " to complete purchase"))
-            );
-            require(
-                requiredTokens[i].transferFrom(msg.sender, address(this), 1),
-                string(abi.encodePacked("Error during ", requiredTokens[i].name(), " token transfer"))
-            );
+            doTokenPayment(requiredTokens[i]);
         }
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
@@ -73,17 +60,40 @@ contract GroupNFT is ERC721, Ownable, ReentrancyGuard {
         emit Purchase(msg.sender);
     }
 
-    function withdraw() external onlyOwner nonReentrant {
+    function doTokenPayment(ERC20 token) private {
+        require(
+            token.allowance(msg.sender, address(this)) > 0,
+            string(abi.encodePacked("Insuficient allowance for token", token.name()))
+        );
+        require (
+            token.balanceOf(msg.sender) > 0, 
+            string(abi.encodePacked("Missing token ", token.name(), " to complete purchase"))
+        );
+        require(
+            token.transferFrom(msg.sender, address(this), 1),
+            string(abi.encodePacked("Error during ", token.name(), " token transfer"))
+        );
+    }
+
+    function withdrawAll() external onlyOwner nonReentrant {
         uint256 contractBalance;
         for (uint i = 0; i < requiredTokens.length; i++) {
-            contractBalance = requiredTokens[i].balanceOf(address(this));
+            contractBalance = getTokenBalance(requiredTokens[i]);
             if (contractBalance > 0) {
-                try requiredTokens[i].transfer(owner(), contractBalance) {
-                    emit Withdrawal(requiredTokens[i].name(), contractBalance);
-                } catch  {
-                    emit WithdrawalFailure(requiredTokens[i].name());
-                }
+                withdrawToken(requiredTokens[i], contractBalance);
             }
         }
+    }
+
+    function withdrawToken(ERC20 token, uint256 contractBalance) private onlyOwner {
+        require(
+            token.transfer(owner(), contractBalance),
+            string(abi.encodePacked("Error during ", token.name(), " token transfer"))
+        );
+        emit Withdrawal(token.name(), contractBalance);
+    }
+
+    function getTokenBalance(ERC20 token) internal view returns(uint256) {
+        return token.balanceOf(address(this));
     }
 }
